@@ -1,0 +1,68 @@
+<!-- game.html -->
+<div class="game-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading questions...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadQuestions()">Try Again</button>
+  </div>
+
+  <!-- Game Content -->
+  <div *ngIf="!isLoading && !error && questions.length > 0" class="quiz-content">
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+      <div class="progress" [style.width.%]="((currentQuestionIndex + 1) / questions.length) * 100"></div>
+    </div>
+
+    <!-- Question Counter -->
+    <div class="question-counter">
+      Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}
+    </div>
+
+    <!-- Timer -->
+    <div class="timer" [class.warning]="timer <= 10">
+      Time: {{ timer }}s
+    </div>
+
+    <!-- Current Question -->
+    <div *ngIf="getCurrentQuestion()" class="question-section">
+      <h1 class="question">{{ getCurrentQuestion()?.question }}</h1>
+
+      <div class="question-meta">
+        <span class="category">{{ getCurrentQuestion()?.category }}</span>
+        <br>
+        <span class="difficulty">{{ getCurrentQuestion()?.difficulty }}</span>
+      </div>
+
+      <h2>Answers</h2>
+      <div class="answers">
+        <button
+          *ngFor="let answer of getCurrentQuestion()?.answers; let i = index"
+          class="answer-btn"
+          [class.selected]="selectedAnswers[currentQuestionIndex] === answer"
+          (click)="selectAnswer(answer)">
+          {{ i + 1 }}. {{ answer }}
+        </button>
+      </div>
+
+
+
+    <!-- End Game Link -->
+    <div class="end-game">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        End Game
+      </a>
+    </div>
+  </div>
+
+  <!-- No Questions State -->
+  <div *ngIf="!isLoading && !error && questions.length === 0" class="no-questions">
+    <p>No questions available</p>
+    <button (click)="loadQuestions()">Reload</button>
+  </div>
+</div>
