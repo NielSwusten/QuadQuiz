@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 backend/HELP.md
+=======
+HELP.md
+>>>>>>> e72232cc01f1a9864f54a9831ad6b66fba468329
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
