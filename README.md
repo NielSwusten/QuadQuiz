@@ -1,6 +1,6 @@
 # Trivia Application
 
-Een eenvoudige webapplicatie voor trivia-vragen met een Java Spring Boot backend en een moderne frontend interface.
+Een eenvoudige webapplicatie voor trivia-vragen met een Java Spring Boot backend en een angular frontend.
 
 ## Overzicht
 
@@ -40,7 +40,7 @@ Deze applicatie biedt gebruikers de mogelijkheid om trivia-vragen te beantwoorde
    
    De frontend is bereikbaar op `http://localhost:4200`
 
-## 🔧 Build Instructies
+## Build Instructies
 
 ### Backend Build
 
@@ -62,7 +62,7 @@ npm run dev
 ```
 
 
-## 📡 API Documentatie
+## API Documentatie
 
 ### Base URL
 - **Ontwikkeling**: `http://localhost:8080/api`
@@ -75,7 +75,7 @@ Haalt 10 trivia-vragen op.
 <img width="1733" height="56" alt="image" src="https://github.com/user-attachments/assets/2665b7d9-55df-48f5-be5b-3ac41f7c6bc4" />
 
 **Parameters:**
-- `amount` (optional): Aantal vragen (standaard: 100)
+- `amount` (optional): Aantal vragen (standaard: 10)
 - `category` (optional): Categorie ID
 - `difficulty` (optional): easy, medium, hard (standaard: easy)
 
