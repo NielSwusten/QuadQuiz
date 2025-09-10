@@ -11,7 +11,11 @@ Deze applicatie biedt gebruikers de mogelijkheid om trivia-vragen te beantwoorde
 - **Backend**: Java Spring Boot (Java 21)
 - **Frontend**: Angular
 - **Externe API**: Open Trivia Database API
-- **Deployment**: [Cloud platform - bijv. Heroku, AWS, Azure]
+- **Deployment**: Netlify (Frontend), Railway (Backend)
+
+## Demo
+
+https://quadquiz.netlify.app/
 
 
 ### Installatie
@@ -60,6 +64,22 @@ cd frontend
 npm run dev
 
 ```
+
+
+### Tests
+Het project bevat ook een aantal backend tests.
+
+### Tests uitvoeren
+
+```bash
+cd backend
+mvn test
+
+```
+
+<img width="525" height="281" alt="image" src="https://github.com/user-attachments/assets/4d040f32-46a1-45dd-8f74-b3d18183ce0f" />
+
+<img width="510" height="236" alt="image" src="https://github.com/user-attachments/assets/8143c63c-f251-4e7a-b827-0a00319848f0" />
 
 
 ## API Documentatie
