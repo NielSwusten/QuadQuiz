@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {RouterLinkActive, RouterModule} from '@angular/router';
+import {ActivatedRoute, RouterLinkActive, RouterModule} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {Questions} from '../entities/questions';
-import {QuestionsService} from '../services/questions/questions.service';
+import {AnswerCheck, AnswerResult, QuestionsService, QuizParams} from '../services/questions/questions.service';
 
 @Component({
   selector: 'app-game',
@@ -24,16 +24,32 @@ export class Game implements OnInit {
   timer: number = 30; // 30 seconden per vraag
   timerInterval: any;
 
-  constructor(private questionsService: QuestionsService) {
+  isCheckingAnswers: boolean = false;
+  quizResults: AnswerResult[] = [];
+  showResults: boolean = false;
+
+  difficulty: string = 'easy'; // default
+
+  constructor(private questionsService: QuestionsService,  private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.loadQuestions();
+    this.route.params.subscribe(params => {
+      if (params['difficulty']) {
+        this.difficulty = params['difficulty'];
+      }
+      this.loadQuestions();
+    });
   }
 
   loadQuestions() {
     this.isLoading = true;
-    this.questionsService.getQuestions().subscribe({
+    const quizParams: QuizParams = {
+
+      difficulty: this.difficulty
+    };
+
+    this.questionsService.getQuestions(quizParams).subscribe({
       next: (data) => {
         this.questions = data;
         this.selectedAnswers = new Array(data.length).fill('');
@@ -49,15 +65,19 @@ export class Game implements OnInit {
   }
   selectAnswer(answer: string) {
     this.selectedAnswers[this.currentQuestionIndex] = answer;
-    this.nextQuestion()
+
+    // Check if this is the last question
+    if (this.currentQuestionIndex === this.questions.length - 1) {
+      this.finishQuiz();
+    } else {
+      this.nextQuestion();
+    }
   }
 
   nextQuestion() {
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
       this.resetTimer();
-    } else {
-      this.finishQuiz();
     }
   }
 
@@ -82,15 +102,43 @@ export class Game implements OnInit {
 
   finishQuiz() {
     clearInterval(this.timerInterval);
-    // Hier zou je de antwoorden kunnen checken via de API
-    console.log('Selected answers:', this.selectedAnswers);
-    alert('Quiz finished!');
+    this.isCheckingAnswers = true;
+
+    const answersToCheck: AnswerCheck[] = this.questions.map((question, index) => ({
+      questionId: question.id,
+      selectedAnswer: this.selectedAnswers[index] || '' // Empty string if no answer selected
+    }));
+
+    console.log('Submitting answers:', answersToCheck);
+
+    this.questionsService.checkAnswers(answersToCheck).subscribe({
+      next: (results) => {
+        this.quizResults = results;
+        this.isCheckingAnswers = false;
+        this.showResults = true;
+        console.log('Quiz results:', results);
+
+        const correctAnswers = results.filter(result => result.correct).length;
+      },
+      error: (err) => {
+        this.isCheckingAnswers = false;
+        this.error = 'Failed to check answers';
+        console.error('Error checking answers:', err);
+        alert('Error checking answers. Please try again.');
+      }
+    });
   }
 
+  getScore(): number {
+    return this.quizResults.filter(result => result.correct).length;
+  }
   ngOnDestroy() {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
   }
 
+  getDifficultyDisplay(): string {
+    return this.difficulty.charAt(0).toUpperCase() + this.difficulty.slice(1);
+  }
 }

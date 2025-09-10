@@ -5,23 +5,51 @@
     <p>Loading questions...</p>
   </div>
 
+  <!-- Checking Answers State -->
+  <div *ngIf="isCheckingAnswers" class="loading">
+    <p>Checking your answers...</p>
+  </div>
+
   <!-- Error State -->
   <div *ngIf="error" class="error">
     <p>{{ error }}</p>
     <button (click)="loadQuestions()">Try Again</button>
   </div>
 
-  <!-- Game Content -->
-  <div *ngIf="!isLoading && !error && questions.length > 0" class="quiz-content">
+  <!-- Results State -->
+  <div *ngIf="showResults && !isCheckingAnswers" class="results">
+    <h1>Quiz Complete!</h1>
+    <p class="score">Your Score: {{ getScore() }} / {{ quizResults.length }}</p>
 
-    <!-- Progress Bar -->
-    <div class="progress-bar">
-      <div class="progress" [style.width.%]="((currentQuestionIndex + 1) / questions.length) * 100"></div>
+    <div class="results-details">
+      <h2>Results:</h2>
+      <div *ngFor="let result of quizResults; let i = index" class="result-item">
+        <p><strong>Question {{ i + 1 }}: {{questions[i].question}}</strong></p>
+        <p class="answer-status" [class.correct]="result.correct" [class.incorrect]="!result.correct">
+          {{ result.correct ? '✓ Correct' : '✗ Incorrect' }}
+        </p>
+        <p  class="correct-answer">
+          Correct answer: {{ result.correctAnswer }}
+        </p>
+      </div>
     </div>
+
+    <div class="result-actions">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Back to Menu
+      </a>
+    </div>
+  </div>
+
+  <!-- Game Content -->
+  <div *ngIf="!isLoading && !error && !showResults && !isCheckingAnswers && questions.length > 0" class="quiz-content">
+
+
 
     <!-- Question Counter -->
     <div class="question-counter">
       Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}
+      <span class="difficulty-indicator">({{ getDifficultyDisplay() }})</span>
     </div>
 
     <!-- Timer -->
@@ -35,8 +63,7 @@
 
       <div class="question-meta">
         <span class="category">{{ getCurrentQuestion()?.category }}</span>
-        <br>
-        <span class="difficulty">{{ getCurrentQuestion()?.difficulty }}</span>
+
       </div>
 
       <h2>Answers</h2>
@@ -49,19 +76,12 @@
           {{ i + 1 }}. {{ answer }}
         </button>
       </div>
-
-
-
-    <!-- End Game Link -->
-    <div class="end-game">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        End Game
-      </a>
     </div>
+
   </div>
 
   <!-- No Questions State -->
-  <div *ngIf="!isLoading && !error && questions.length === 0" class="no-questions">
+  <div *ngIf="!isLoading && !error && !showResults && questions.length === 0" class="no-questions">
     <p>No questions available</p>
     <button (click)="loadQuestions()">Reload</button>
   </div>

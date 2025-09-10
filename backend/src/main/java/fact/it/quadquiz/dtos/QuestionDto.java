@@ -10,7 +10,6 @@ public class QuestionDto {
     private String category;
     private String difficulty;
 
-    // Constructors
     public QuestionDto() {}
 
     public QuestionDto(String id, String question, List<String> answers, String category, String difficulty) {
