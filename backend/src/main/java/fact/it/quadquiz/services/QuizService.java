@@ -7,9 +7,8 @@ import fact.it.quadquiz.dtos.AnswerResultDto;
 import fact.it.quadquiz.dtos.QuestionDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.HtmlUtils;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,7 +33,7 @@ public class QuizService {
             questions.add(questionDto);
 
             correctAnswers.put(questionDto.getId(),
-                    URLDecoder.decode(result.get("correct_answer").asText(), StandardCharsets.UTF_8));
+                    HtmlUtils.htmlUnescape(result.get("correct_answer").asText()));
         }
 
         return questions;
@@ -62,35 +61,25 @@ public class QuizService {
         if (category != null && !category.isEmpty()) {
             url.append("&category=").append(category);
         }
-
         url.append("&difficulty=").append(difficulty)
-                .append("&type=multiple")
-                .append("&encode=url3986"); // URL encoding voor speciale karakters
+                .append("&type=multiple");
 
         return url.toString();
     }
 
-    private QuestionDto mapToQuestionDto(JsonNode result) throws Exception {
-        String questionId = UUID.randomUUID().toString();
-        String question = URLDecoder.decode(result.get("question").asText(), StandardCharsets.UTF_8);
-        String correctAnswer = URLDecoder.decode(result.get("correct_answer").asText(), StandardCharsets.UTF_8);
-
-        List<String> incorrectAnswers = new ArrayList<>();
-        JsonNode incorrectArray = result.get("incorrect_answers");
-        for (JsonNode incorrect : incorrectArray) {
-            incorrectAnswers.add(URLDecoder.decode(incorrect.asText(), StandardCharsets.UTF_8));
-        }
-
-        List<String> allAnswers = new ArrayList<>(incorrectAnswers);
-        allAnswers.add(correctAnswer);
+    private QuestionDto mapToQuestionDto(JsonNode result) {
+        List<String> allAnswers = new ArrayList<>();
+        result.get("incorrect_answers").forEach(node ->
+                allAnswers.add(HtmlUtils.htmlUnescape(node.asText())));
+        allAnswers.add(HtmlUtils.htmlUnescape(result.get("correct_answer").asText()));
         Collections.shuffle(allAnswers);
 
         return new QuestionDto(
-                questionId,
-                question,
+                UUID.randomUUID().toString(),
+                HtmlUtils.htmlUnescape(result.get("question").asText()),
                 allAnswers,
-                URLDecoder.decode(result.get("category").asText(), StandardCharsets.UTF_8),
-                URLDecoder.decode(result.get("difficulty").asText(), StandardCharsets.UTF_8)
+                HtmlUtils.htmlUnescape(result.get("category").asText()),
+                result.get("difficulty").asText()
         );
     }
 }
