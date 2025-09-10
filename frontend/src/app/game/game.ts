@@ -66,7 +66,6 @@ export class Game implements OnInit {
   selectAnswer(answer: string) {
     this.selectedAnswers[this.currentQuestionIndex] = answer;
 
-    // Check if this is the last question
     if (this.currentQuestionIndex === this.questions.length - 1) {
       this.finishQuiz();
     } else {
@@ -108,8 +107,6 @@ export class Game implements OnInit {
       questionId: question.id,
       selectedAnswer: this.selectedAnswers[index] || '' // Empty string if no answer selected
     }));
-
-    console.log('Submitting answers:', answersToCheck);
 
     this.questionsService.checkAnswers(answersToCheck).subscribe({
       next: (results) => {
