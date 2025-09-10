@@ -31,7 +31,6 @@ public class QuizServiceTest {
         correctAnswers.put("question1", "Paris");
         correctAnswers.put("question2", "4");
 
-        // Gebruik ReflectionTestUtils om de private field te zetten
         ReflectionTestUtils.setField(quizService, "correctAnswers", correctAnswers);
 
         List<AnswerCheckDto> userAnswers = Arrays.asList(

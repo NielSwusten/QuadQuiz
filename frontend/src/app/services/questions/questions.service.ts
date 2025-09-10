@@ -23,6 +23,7 @@ export interface AnswerResult {
 })
 export class QuestionsService {
 
+  //normaal in env
   url = `http://localhost:8080/api`;
 
   constructor(private httpClient: HttpClient) {
